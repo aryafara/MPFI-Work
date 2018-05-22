@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlayBar</class>
+ <widget class="QWidget" name="PlayBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>186</width>
+    <height>419</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="playBttn">
+     <property name="text">
+      <string>Play</string>
+     </property>
+    </widget>
+   </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QSlider" name="Scrubber">
+     <property name="minimumSize">
+      <size>
+       <width>22</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>22</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="settingsBttn">
+     <property name="text">
+      <string>Settings</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>playBttn</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scrubber</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>209</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Scrubber</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>playBttn</receiver>
+   <slot>toggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>40</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
