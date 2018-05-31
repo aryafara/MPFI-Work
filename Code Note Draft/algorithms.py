@@ -13,7 +13,30 @@ def saveROIs(image,color):
     pass
 
 
-
+#scrubbing on image tool
+#tool that takes the horizontal path of user's mouse and selects a frame
+frame = 0
+toscrub = False
+ix = -1
+width = images[0].shape[1]
+numframes = len(images)
+def mousescrubber(event,x,y,_ignore,__ignore):
+    global toscrub,ix
+    if event==cv2.EVENT_LBUTTONDOWN:
+        if not toscrub:
+            ix = x #grab initial position
+            toscrub = True 
+    elif event==cv2.EVENT_MOUSEMOVE:
+        if toscrub:
+            global numframes,width,frame
+            newframe =int((numframes)*(float(x-ix)/width)) #rescales mouse position so as to be an integer from 0 to numframes-1
+            if  newframe < numframes and newframe >-1:
+                frame = newframe
+            elif newframe <=-1:
+                frame = frame - newframe
+    elif event==cv2.EVENT_LBUTTONUP:
+        if toscrub:
+            toscrub = not toscrub
 #freeform select
 #simple tool which lets user draw a path that will be closed in all cases
 """
@@ -27,7 +50,7 @@ mask = np.zeros(image.shape(),np.uint8)
 priorpoint=(-1,-1) #global point to allow linedraw
 initpoint =(-1,-1) #for final portion
 #begin defining mouse callback fn
-def freeform(event,x,y,flags,param):
+def freeSelect(event,x,y,flags,param):
     ''' 
     simple function to draw a perimeter via freehand mouse
     Behavior:
@@ -38,11 +61,15 @@ def freeform(event,x,y,flags,param):
         color should be maximized for a color that is most visible in image (will make algo)
         size of line should be proportional to definition to prevent poor aliasing
     '''
-    global initpoint,priorpoint,drawing
-    if event==cv2.EVENT_LBUTTONDOWN:
-        if not drawing: 
+    global priorpoint,drawing
+    if event==cv2.EVENT_FLAG_LBUTTON:
+        global initpoint
+        if drawing:
+            #now done drawing, must close shape before turning off drawing
+            cv2.line(image,initpoint,(x,y),color,size)
+        else: 
             initpoint = (x,y)#so we only catch initial point once
-        drawing = True
+        drawing = not drawing
         priorpoint = (x,y)#assign for next step of drawing
     elif event==cv2.EVENT_MOUSEMOVE:
         if drawing:
@@ -50,24 +77,35 @@ def freeform(event,x,y,flags,param):
             #placeholder vars for color and size
             #just for this example
             priorpoint = (x,y)
-    elif event==cv2.EVENT_LBUTTONUP:
-        if drawing:
-            #now done drawing, must close shape before turning off drawing
-            cv2.line(image,initpoint,(x,y),color,size)
-        drawing = False
-
 cv2.namedWindow(windowname)
-cv2.setMouseCallback(windowname,freeform)
+cv2.setMouseCallback(windowname,freeSelect)
 'example main loop usage:'
 while(1):
     cv2.imshow('windowname',img)
     k = cv2.waitKey(1) & 0xFF
-    if k == ord('m'):
-        mode = not mode
-    elif k == 27:
+    if k == 27:
         break
-
 ''''''
 
-#Zoom select
-#simple tool to zoom in on portion        
+#ROI Zoom select
+#given an ROI, zooms in/out by distance travelled by mouse with button pressed down
+#direction travelled does not matter, takes magnitude of distance and applies as scalar to maintain aspect ratio
+''' handy dandy zoom mouse-tool, based on free select but modifies a scalar integer rather than draws to screen'''
+def zoomSelect(event,x,y,flags,parameter):
+    '''
+    simple function to handle zoom scale
+    Behavior:
+        if no mouse, nothing should occur
+        if lmb down, records
+    '''
+    global priorpoint
+    if event==cv2.EVENT_LBUTTONDOWN:
+        if priorpoint==(-1,-1):# so we only record the start point once
+            priorpoint = (x,y)
+    elif event==cv2.EVENT_LBUTTONUP:
+        global scale #scale is left as an integer so opencv doesnt have a panic
+        scale = int(sp.spatial.distance.euclidean((x,y),priorpoint)) #scipy euclidean is more efficient than numpy's linalg.norm and a manual python implementation
+        priorpoint = (-1,-1)
+
+def roiZoom(roi,scale):
+    pass
