@@ -2,6 +2,7 @@
 import cv2
 import scipy as sp
 import numpy as np
+
 #function for saving ROIs
 def saveROIs(image,color):
     ''' 
@@ -13,7 +14,7 @@ def saveROIs(image,color):
     pass
 
 
-#scrubbing on image tool
+#scrubbing on image tool //DEPRECATED, not using OpenCV for viewing anymore
 #tool that takes the horizontal path of user's mouse and selects a frame
 frame = 0
 toscrub = False
@@ -37,7 +38,7 @@ def mousescrubber(event,x,y,_ignore,__ignore):
     elif event==cv2.EVENT_LBUTTONUP:
         if toscrub:
             toscrub = not toscrub
-#freeform select
+#freeform select //DEPRECATED, not using OpenCV for viewing anymore
 #simple tool which lets user draw a path that will be closed in all cases
 """
 Objectives:
@@ -87,7 +88,7 @@ while(1):
         break
 ''''''
 
-#ROI Zoom select
+#ROI Zoom select //DEPRECATED, not using OpenCV for viewing anymore
 #given an ROI, zooms in/out by distance travelled by mouse with button pressed down
 #direction travelled does not matter, takes magnitude of distance and applies as scalar to maintain aspect ratio
 ''' handy dandy zoom mouse-tool, based on free select but modifies a scalar integer rather than draws to screen'''
