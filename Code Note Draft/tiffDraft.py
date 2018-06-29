@@ -1,29 +1,38 @@
 import numpy as np
 import scipy as sp
 import cv2
-import pims
-from time import sleep
-import matplotlib.pyplot as plt
+from pims import TiffStacks
+import read_roi
+from read_roi import read_roi_zip, read_roi_file
+"""
+useful docs:
+pims:   http://soft-matter.github.io/pims/v0.4/
+numpy:  https://docs.scipy.org/doc/numpy/reference/
+opencv: https://docs.opencv.org/3.3.1/d6/d00/tutorial_py_root.html
+matplotlib: https://matplotlib.org/
 
-class TiffStacks(pims.TiffStack):
+can't help you with finding pyqt resources, most are private, pyside is illegible.
+I reccommend using http://gen.lib.rus.ec/ to find some useful books maybe.
+"""
 
-    def __init__(self,filename: str,frame=0):
+
+
+#The following class should be initialized in any opening of a tiff stack for python work
+class TiffStacks(TiffStack): #parent class is credit to pims, gives slicing and iteration, as well as lazyloading and other useful things
+    def __init__(self,filename: str,frame=0,rois = None):
         super(TiffStacks,self).__init__(filename)
-        self.name = filename
-        self.currentframe = self[frame]
-        self.contrast = 10 
-    def histogram(self,grayscale = True,color=0):
-        outframe = ((self.currentframe*self.contrast)*(255./65535))
-        if grayscale:
-            im8b = cv2.cvtColor(outframe,cv2.COLOR_BGR2GRAY)
-            plot = plt.plot(cv2.calcHist([im8b],[0],None,[256],[0,256]))
-        else:
-            plot = plt.plot(cv2.calcHist([self.currentframe],[0],None,[256],[0,256]))
-        plt.show()
-    def view(self):
-        pass
+        self.rois = rois #rois are loaded as orderedDict type, more info in relevant methods
+        self.name = filename #name preserved for debugging objects
+        self.contrast = 10 #generic multiplier
+        self.currentframe =  (self[frame]*self.contrast*(255./65535)).astype(np.uint8) #squeezes into a 8bit view (numpy array) 
 
-        
+    def roi_view(self,highlight=(150,0,0)):
+        if not self.rois:
+            raise FileNotFoundError #if no rois are loaded, raise error
+        for dicts in self.rois.items():
+
+
+
     
 
 images = TiffStacks('rawData_200xDownsampled.tif')

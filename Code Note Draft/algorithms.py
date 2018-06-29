@@ -2,18 +2,19 @@
 import cv2
 import scipy as sp
 import numpy as np
-
+import read_roi as rr
 #function for saving ROIs
-def saveROIs(image,color):
+def visualizeROIs(image,color,rois):
     ''' 
-    function to save selected ROIs of any tools as a mask
-    Behavior:
-            given a np.array with the coordinates of the ROIs
-            will output a mask with just 
+    function to load ROIs from .roi file and map it to tiff image stack
+
     '''
-    pass
-
-
+    if len(image.shape())==2:
+        np.dstack((image,np.zeros(image.shape()[0:2]))
+    roipoints = [np.ndarray(zip(xs,ys)) for xs,ys in zip(roi.items()['x'],roi.items()['y'])]
+    for roi in roipoints:
+        for point in roi:
+            image[point] += color
 #scrubbing on image tool //DEPRECATED, not using OpenCV for viewing anymore
 #tool that takes the horizontal path of user's mouse and selects a frame
 frame = 0
